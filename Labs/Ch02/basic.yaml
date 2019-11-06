@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: basicpod
+  labels:
+    type: webserver
+spec:
+  containers:
+  - name: webcont
+    image: nginx
+    ports:
+      - containerPort: 80
+  - name: fdlogger
+    image: fluent/fluentd

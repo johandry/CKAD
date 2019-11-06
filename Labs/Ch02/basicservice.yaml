@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: basicservice
+spec:
+  selector:
+    type: webserver
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 80
