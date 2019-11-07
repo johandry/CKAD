@@ -252,23 +252,138 @@ deployment() {
   rm deployment.yaml
 }
 
-probes() {
-  kubectl create -f simpledeployment.yaml
-  sleep 5
+readinessProbe() {
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating deployment:\n"
+  cat <<EOD | kubectl create -f -
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: try
+  name: try
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 6
+  selector:
+    matchLabels:
+      app: try
+  template:
+    metadata:
+      labels:
+        app: try
+    spec:
+      containers:
+      - image: johandry/simpleapp:latest
+        imagePullPolicy: Always
+        name: simpleapp
+        readinessProbe:
+          periodSeconds: 5
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+      restartPolicy: Always
+EOD
+  sleep 10
 
-  kubectl get pods
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods & Deployments:\n"
+  watch -n 5 kubectl get pods
+  kubectl get pods,deployments
 
   ONE_POD=$(kubectl get pods | grep ^try- | head -1 | awk '{print $1}')
-  kubectl exec -it ${ONE_POD} -- touch /tmp/healthy
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Getting Pod '${ONE_POD}' healthy and ready:\n"
+  kubectl exec ${ONE_POD} touch /tmp/healthy
+  sleep 3
 
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods:\n"
   kubectl get pods
 
-  for p in $(kubectl get pods | grep ^try- | awk '{print $1}'); do 
-    kubectl exec -it ${p} -- touch /tmp/healthy
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Getting all Pods healthy and ready:\n"
+  for p in $(kubectl get pods | grep ^try- | awk '{print $1}'); do
+    echo -ne "\x1B[92;1m[INFO ]\x1B[0m -> Getting Pods '${p}' healthy and ready:\n"
+    kubectl exec ${p} touch /tmp/healthy
   done
 
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods:\n"
+  watch -n 5 kubectl get pods
   kubectl get pods
 
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting deployment:\n"
+  kubectl delete deployment try
+}
+
+livenessProbe() {
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating deployment:\n"
+  cat <<EOD | kubectl create -f -
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: try
+  name: try
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 6
+  selector:
+    matchLabels:
+      app: try
+  template:
+    metadata:
+      labels:
+        app: try
+    spec:
+      containers:
+      - image: johandry/simpleapp:latest
+        imagePullPolicy: Always
+        name: simpleapp
+        readinessProbe:
+          periodSeconds: 5
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+      - image: k8s.gcr.io/goproxy:0.1
+        imagePullPolicy: Always
+        name: goproxy
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      restartPolicy: Always
+EOD
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods & Deployments:\n"
+  watch -n 5 kubectl get pods
+  kubectl get pods,deployments
+
+  ONE_POD=$(kubectl get pods | grep ^try- | head -1 | awk '{print $1}')
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Getting Pod '${ONE_POD}' healthy and ready:\n"
+  kubectl exec ${ONE_POD} -c simpleapp touch /tmp/healthy
+  sleep 3
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods:\n"
+  kubectl get pods
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Getting all Pods healthy and ready:\n"
+  for p in $(kubectl get pods | grep ^try- | awk '{print $1}'); do
+    echo -ne "\x1B[92;1m[INFO ]\x1B[0m -> Getting Pods '${p}' healthy and ready:\n"
+    kubectl exec ${p} -c simpleapp touch /tmp/healthy
+  done
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods:\n"
+  watch -n 5 kubectl get pods
+  kubectl get pods
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting deployment:\n"
+  kubectl delete deployment try
 }
 
 # docker_build
@@ -277,4 +392,5 @@ probes() {
 # compose_2_manifest
 # insecure_registry
 # deployment
-probes
+# readinessProbe
+# livenessProbe
