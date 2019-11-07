@@ -207,14 +207,20 @@ insecure_registry() {
   docker push localhost:${SRV_PORT}/simpleapp
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting the insecure registry:\n"
-  kubectl delete -f insecure_registry.yaml
+  # kubectl delete -f insecure_registry.yaml
 }
 
 deployment() {
+  docker_build
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Push Docker image to DockerHub:\n"
+  docker tag simpleapp johandry/simpleapp
+  docker push johandry/simpleapp
+
   # SRV_PORT=$(kubectl get service registry | grep registry | awk '{print $5}' | cut -f2 -d: | cut -f1 -d/)
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating deployment:\n"
   # kubectl create deployment try --image=localhost:${SRV_PORT}/simpleapp:latest
-  kubectl create deployment try --image=simpleapp:latest
+  kubectl create deployment try --image=johandry/simpleapp:latest
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Increasing replicas to 6:\n"
   kubectl scale deployment try --replicas=6
@@ -246,9 +252,29 @@ deployment() {
   rm deployment.yaml
 }
 
+probes() {
+  kubectl create -f simpledeployment.yaml
+  sleep 5
+
+  kubectl get pods
+
+  ONE_POD=$(kubectl get pods | grep ^try- | head -1 | awk '{print $1}')
+  kubectl exec -it ${ONE_POD} -- touch /tmp/healthy
+
+  kubectl get pods
+
+  for p in $(kubectl get pods | grep ^try- | awk '{print $1}'); do 
+    kubectl exec -it ${p} -- touch /tmp/healthy
+  done
+
+  kubectl get pods
+
+}
+
 # docker_build
 # docker_run
 # docker_compose_registry_insecure
 # compose_2_manifest
 # insecure_registry
-deployment
+# deployment
+probes

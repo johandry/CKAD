@@ -1,0 +1,40 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: try
+  name: try
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 6
+  selector:
+    matchLabels:
+      app: try
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: try
+    spec:
+      containers:
+      - image: johandry/simpleapp:latest
+        imagePullPolicy: Always
+        name: simpleapp
+        readinessProbe:
+          periodSeconds: 5
+          exec:
+            command:
+            - cat
+            - /tmp/healthy
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
