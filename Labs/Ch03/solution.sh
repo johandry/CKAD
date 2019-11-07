@@ -110,34 +110,39 @@ EODCI
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Volume manifests:\n"
   cat <<EOV > vol.yaml
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  labels:
-    type: local
-  name: task-pv-volume 
-spec:
-  accessModes:
-  - ReadWriteOnce 
-  capacity:
-    storage: 200Mi
-  hostPath:
-    path: /tmp/data
-  persistentVolumeReclaimPolicy: Retain
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  labels:
-    type: local
-  name: registryvm
-spec:
-  accessModes:
-  - ReadWriteOnce 
-  capacity:
-    storage: 200Mi
-  hostPath:
-    path: /tmp/nginx
-  persistentVolumeReclaimPolicy: Retain
+kind: List
+metadata: {}
+items:
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    labels:
+      type: local
+    name: task-pv-volume 
+  spec:
+    storageClassName: hostpath
+    accessModes:
+    - ReadWriteOnce 
+    capacity:
+      storage: 200Mi
+    hostPath:
+      path: /tmp/data
+    persistentVolumeReclaimPolicy: Retain
+- apiVersion: v1
+  kind: PersistentVolume
+  metadata:
+    labels:
+      type: local
+    name: registryvm
+  spec:
+    storageClassName: hostpath
+    accessModes:
+    - ReadWriteOnce 
+    capacity:
+      storage: 200Mi
+    hostPath:
+      path: /tmp/nginx
+    persistentVolumeReclaimPolicy: Retain
 EOV
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Volumes:\n"
@@ -151,17 +156,18 @@ EOV
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m All created resources:\n"
   kubectl get pods,svc,pvc,pv,deploy
 
-  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking Docker Registry:\n"
-  curl http://localhost:5000/v2/
+  SVC_REG_IP=$(kubectl get svc registry | grep registry | awk '{print $3}')
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking Docker Registry (http://${SVC_REG_IP}:5000/v2/):\n"
+  kubectl run -it alpine --image=alpine --rm --restart=Never -- /bin/sh -c "apk update 2>&1 >/dev/null  && apk add curl 2>&1 >/dev/null; curl http://${SVC_REG_IP}:5000/v2/ && echo"
   echo
 
   docker_build
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Tag Docker image to new Docker Registry\n"
-  docker tag simpleapp localhost:5000/simpleapp
+  docker tag simpleapp ${SVC_REG_IP}:5000/simpleapp
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Pushing image to new Docker Registry\n"
-  docker push localhost:5000/simpleapp
+  docker push ${SVC_REG_IP}:5000/simpleapp
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Delete everything created:\n"
   kubectl delete -f registry_insecure.yaml
@@ -175,7 +181,37 @@ EOV
   docker image rm localhost:5000/simpleapp
 }
 
+insecure_registry() {
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating an insecure registry:\n"
+  kubectl create -f insecure_registry.yaml
+  sleep 5
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m All created resources:\n"
+  kubectl get pods,svc,pvc,pv,deploy
+
+  docker_build
+
+  SRV_PORT=$(kubectl get service registry | grep registry | awk '{print $5}' | cut -f2 -d: | cut -f1 -d/)
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Tag Docker image to new Docker Registry\n"
+  docker tag simpleapp localhost:${SRV_PORT}/simpleapp
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking Docker Registry (http://localhost:${SRV_PORT}/v2/):\n"
+  curl http://localhost:${SRV_PORT}/v2/
+  echo
+
+  echo -ne "\n\x1B[93;1m[WARN ]\x1B[0m Add the following insecure Docker Registry (localhost:${SRV_PORT}) to Docker config and restart it\n"
+  read -n 1 -s -r -p "Press any key to continue"
+  echo
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Pushing image to new Docker Registry (localhost:${SRV_PORT})\n"
+  docker push localhost:${SRV_PORT}/simpleapp
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting the insecure registry:\n"
+  kubectl delete -f insecure_registry.yaml
+}
+
 # docker_build
 # docker_run
-docker_compose_registry_insecure
+# docker_compose_registry_insecure
 # compose_2_manifest
+insecure_registry
