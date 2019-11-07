@@ -210,8 +210,45 @@ insecure_registry() {
   kubectl delete -f insecure_registry.yaml
 }
 
+deployment() {
+  # SRV_PORT=$(kubectl get service registry | grep registry | awk '{print $5}' | cut -f2 -d: | cut -f1 -d/)
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating deployment:\n"
+  # kubectl create deployment try --image=localhost:${SRV_PORT}/simpleapp:latest
+  kubectl create deployment try --image=simpleapp:latest
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Increasing replicas to 6:\n"
+  kubectl scale deployment try --replicas=6
+  sleep 5
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods & Deployments:\n"
+  kubectl get pods,deployment
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Save deployment to manifest file:\n"
+  kubectl get deployment try -o yaml > deployment.yaml
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting deployment:\n"
+  kubectl delete deployment try 
+  sleep 5
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods & Deployments:\n"
+  kubectl get pods,deployment
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Creating deployment from file:\n"
+  kubectl create -f deployment.yaml
+  sleep 5
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Pods & Deployments:\n"
+  kubectl get pods,deployment
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Deleting deployment:\n"
+  kubectl delete deployment try 
+
+  rm deployment.yaml
+}
+
 # docker_build
 # docker_run
 # docker_compose_registry_insecure
 # compose_2_manifest
-insecure_registry
+# insecure_registry
+deployment
