@@ -100,7 +100,7 @@ EOS
 
   IPSVC=$(kubectl get service | grep basicservice | awk '{print $3}')
   echo "From a node, you can access the web page with the Service IP: curl http://$IPSVC"
-  # kubectl run curl --image=radial/busyboxplus:curl -it --rm -- /bin/sh -c "curl http://$IPSVC"
+  kubectl run curl --image=radial/busyboxplus:curl -it --rm --restart=Never -- /bin/sh -c "curl http://$IPSVC"
 
   echo "Delete Service:"
   kubectl delete svc basicservice
