@@ -9,60 +9,109 @@
 
 ## Tips
 
-**API Resources**:
-`kubectl api-resources`
+##### API Resources
 
-**kubectl explain**:
-`kubectl explain deployment`
-`kubectl explain deployment --recursive`
-`kubectl explain deployment.spec.strategy`
+```bash
+kubectl api-resources
+```
 
-**Cluster information**:
-`kubectl cluster-info`
-`kubectl get nodes`
-`kubectl get all --all-namespaces`
+##### kubectl explain
 
-**Generate manifest**:
-Append to `run` the parameter `--dry-run=true -o yaml`
-`kubectl run nginx --image=nginx --restart=Never --dry-run=true -o yaml`
+```bash
+kubectl explain deployment
+kubectl explain deployment --recursive
+kubectl explain deployment.spec.strategy
+```
+
+##### Cluster information
+
+```bash
+kubectl cluster-info
+kubectl get nodes
+kubectl get all --all-namespaces
+```
+
+##### Generate manifest
+
+Append to `run` the parameter `--dry-run=true -o yaml`:
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --dry-run=true -o yaml
+```
+
 Append `-o yaml --export` to an existing resource
-`kubectl get po nginx -o yaml --export`
 
-**kubectl cheatsheet**:
+```bash
+kubectl get po nginx -o yaml --export
+```
+
+##### kubectl cheatsheet
+
 Go to kubernetes.io -> Reference -> kubectl CLI -> [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-**kubectl commands reference**:
+##### kubectl commands reference
+
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Commands -> [kubectl Command Reference](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
 
-**kubectl run to generate resources**:
+##### kubectl run to generate resources
+
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Usage Conventions -> Scroll down to Best Practices -> [Generators](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)
 
-**Shell into a container**:
-Go to kubernetes.io -> Tasks -> Monitoring, Logging, and Debugging -> [Get a Shell to a Running Container](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/)
-`kubectl exec -it shell-demo -- /bin/bash`
-`kubectl exec shell-demo env`
-`kubectl run busybox --image=busybox -it --rm -- env`
+##### Shell into a container
 
-**Using port forwarding**:
+Go to kubernetes.io -> Tasks -> Monitoring, Logging, and Debugging -> [Get a Shell to a Running Container](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/)
+
+```bash
+kubectl exec -it shell-demo -- /bin/bash
+kubectl exec shell-demo env
+kubectl run busybox --image=busybox -it --rm -- env
+```
+
+##### **Using port forwarding**
+
 Go to kubernetes.io -> Tasks -> Access Applications in a Cluster -> [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
 
-**Create pod**:
-`kubectl create namespace myns; kubectl run nginx --image=nginx --restart=Never -n myns`
-To generate the manifest append: `--dry-run=true -o yaml`
-Allowing traffic in a port, append: `--port=80`
-Check the pod:
-`kubectl get pod -o wide` to get the IP
-`kubectl run busybox --image=busybox -it --rm --restart=Never -- wget -O- IP:80`
+##### Create pod
 
-**Change pod image**:
-`kubectl set image pod/nginx nginx=nginx:1.8`
-`kubectl describe po nginx`
-`kubectl get pods -w` or `watch -5 kubectl get pods`
+```bash
+kubectl create namespace myns
+kubectl run nginx --image=nginx --restart=Never -n myns
+```
 
-**Get pod information**:
-`kubectl describe pod nginx`
-`kubectl logs nginx`
-`kubectl logs nginx -p` -> From previous instance, when the pod crashed
+To generate the manifest append: `--dry-run=true -o yaml`, to allow traffic in a port, append: `--port=80`
+
+```bash
+kubectl create namespace myns
+kubectl run nginx --image=nginx --restart=Never --port=80 --dry-run=true -o yaml -n myns
+```
+
+To check the pod, get the pod IP and use a temporal pod to access the pod service:
+
+```bash
+kubectl get pod -o wide # get the IP
+kubectl run busybox --image=busybox -it --rm --restart=Never -- wget -O- $IP:80
+```
+
+##### Change pod image
+
+```bash
+kubectl set image pod/nginx nginx=nginx:1.8
+kubectl describe po nginx
+
+kubectl get pods -w
+# Or
+watch -5 kubectl get pods
+```
+
+##### Get pod information
+
+```bash
+kubectl describe pod nginx
+kubectl logs nginx
+
+# From previous instance, when the pod crashed
+kubectl logs nginx -p
+```
 
 ## Sources
 
