@@ -6,8 +6,11 @@ Go to kubernetes.io -> Tasks -> Run Jobs -> [Running Automated Tasks with a Cron
 
 ##### Create a job
 
-`kubectl run sleepy --image=busybox --restart=OnFailure --dry-run=true -o yaml -- /bin/sleep 3`
-`kubectl create job sleepy --image=busybox --dry-run=true -o yaml -- /bin/sleep 3`
+```bash
+kubectl run sleepy --image=busybox --restart=OnFailure --dry-run=true -o yaml -- /bin/sleep 3
+# Or
+kubectl create job sleepy --image=busybox --dry-run=true -o yaml -- /bin/sleep 3
+```
 
 ##### Completion, Parallelism & Active Deadline
 
