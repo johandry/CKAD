@@ -3,9 +3,9 @@
 ## Chapters
 
 1. Chapter 1: Introduction
-2. Chapter 2: [Kubernetes Architecture](./Las/Ch02)
-3. Chapter 3: [Build](./Las/Ch03)
-4. Chapter 4: [Design](./Las/Ch04)
+2. Chapter 2: [Kubernetes Architecture](./Labs/Ch02)
+3. Chapter 3: [Build](./Labs/Ch03)
+4. Chapter 4: [Design](./Labs/Ch04)
 
 ## Tips
 
