@@ -6,6 +6,7 @@
 2. Chapter 2: [Kubernetes Architecture](./Labs/Ch02)
 3. Chapter 3: [Build](./Labs/Ch03)
 4. Chapter 4: [Design](./Labs/Ch04)
+5. Chapter 5: [Deployment Configuration](./Labs/Ch05)
 
 ## Tips
 
@@ -100,7 +101,7 @@ kubectl describe po nginx
 
 kubectl get pods -w
 # Or
-watch -5 kubectl get pods
+watch -n 5 kubectl get pods
 ```
 
 ##### Get pod information
