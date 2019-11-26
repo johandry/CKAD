@@ -21,12 +21,12 @@ Insert `Pod.spec.securityContext.runAsUser`:
 apiVersion: v1
 kind: Pod
 metadata:
-	name: nginx
+  name: nginx
 spec:
-	securityContext:
-		runAsUser: 101
-	containers:
-		...
+  securityContext:
+    runAsUser: 101
+  containers:
+    ...
 ```
 
 Make it has the capabilities `NET_ADMIN` and `SYS_TIME`:
@@ -35,17 +35,15 @@ Make it has the capabilities `NET_ADMIN` and `SYS_TIME`:
 apiVersion: v1
 kind: Pod
 metadata:
-	name: nginx
+  name: nginx
 spec:
-	securityContext:
-		runAsUser: 101
-		capabilities:
-			add: ["NET_ADMIN", "SYS_TIME"]
-	containers:
-		...
+  securityContext:
+    runAsUser: 101
+    capabilities:
+      add: ["NET_ADMIN", "SYS_TIME"]
+  containers:
+    ...
 ```
-
-
 
 #### Network Policies
 
@@ -68,18 +66,18 @@ Network Policy:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-	name: access
+  name: access
 spec:
-	podSelector:
-		matchLabels:
-			run: nginx    # label of the pod to apply the rule
-	policyType:
-		- Ingress
-	igress:
-		- from
-			- podSelector:
-				matchLabels:
-					access: true
+  podSelector:
+    matchLabels:
+      run: nginx    # label of the pod to apply the rule
+  policyType:
+    - Ingress
+  igress:
+    - from
+      - podSelector:
+        matchLabels:
+          access: true
 ```
 
 Check:
@@ -92,9 +90,9 @@ kubectl run busybox --image=busybox --rm -it --restart=Never -- wget -O- http://
 kubectl run busybox --image=busybox --rm -it --restart=Never --labels=access=true -- wget -O- http://nginx:80
 ```
 
-## Notes from the training
+### Notes from the Training
 
-![](https://kubernetes.io/images/docs/admin/access-control-overview.svg)
+![Access Control Overview](https://kubernetes.io/images/docs/admin/access-control-overview.svg)
 
 #### Example of authorization policy file
 
@@ -106,7 +104,7 @@ kubectl run busybox --image=busybox --rm -it --restart=Never --labels=access=tru
     "user": "bob",
     "namespace": "foobar",
     "resource": "pods",
-    "readonly": true     
+    "readonly": true
   }
 }
 ```
@@ -115,3 +113,88 @@ More examples in:
 
 kubernetes.io > Reference > Accessing the API > [Using ABAC Authorization](https://kubernetes.io/docs/reference/access-authn-authz/abac/)
 
+##### Policy example using `securityContext`
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    runAsNonRoot: true
+  containers:
+  - image: nginx
+    name: nginx
+```
+
+Know more about [Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
+
+##### Pod Security Policy (PSP) example
+
+```yaml
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: restricted
+spec:
+  seLinux:
+    rule: RunAsAny
+  supplementalGroups:
+    rule: RunAsAny
+  runAsUser:
+    rule: MustRunAsNonRoot
+  fsGroup:
+    rule: RunAsAny
+```
+
+More examples of [PodSecurityPolicy](https://github.com/kubernetes/examples/tree/master/staging/podsecuritypolicy/rbac)
+
+##### Network Security Policy example
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ingress-egress-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+      - ipBlock:
+          cidr: 172.17.0.0/16
+          except:
+            - 172.17.1.0/24
+    - namespaceSelector:
+        matchLabels:
+          project: myproject
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+      - protocol: TCP
+        port: 6379
+  egress:
+    - to:
+      - ipBlock:
+          cidr: 10.0.0.0/24
+      ports:
+        - protocol: TCP
+          port: 5978
+```
+
+Example of complex match expression:
+
+```yaml
+podSelector:
+  matchExpression:
+    - {key: inns, operator: In, values: ["yes"]}
+```
+
+More examples of [Network Policies](https://github.com/ahmetb/kubernetes-network-policy-recipes)
