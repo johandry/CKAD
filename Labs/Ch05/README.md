@@ -1,6 +1,6 @@
-# Chapter 5: Deployment Configuration
+## Chapter 5: Deployment Configuration
 
-#### Documentation
+### Documentation
 
 - kubernetes.io -> Tasks -> Configure Pods and Containers -> [Configure a Pod to Use a ConfigMap](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/)
 - kubernetes.io -> Concepts -> Configuration -> [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
@@ -9,7 +9,7 @@
 - kubernetes.io -> Tasks -> Configure Pods and Containers -> [Configure a Pod to Use a PersistentVolume for Storage](https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/)
 - kubernetes.io -> Concepts -> Workloads -> Controllers -> [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)
 
-#### ConfigMaps
+### ConfigMaps
 
 #### Create ConfigMap from values, files and directories
 
@@ -106,7 +106,7 @@ status: {}
 kubectl exec -it nginx -- /bin/sh -c 'ls -l /etc/config && cat /etc/config/key1'
 ```
 
-#### Secrets
+### Secrets
 
 #### Create Secret with manifest
 
@@ -207,7 +207,7 @@ Check
 kubectl exec nginx -- /bin/bash -c 'echo $USERNAME:$PASSWORD'
 ```
 
-#### Volumes
+### Volumes
 
 1. Create the Presistent Volume
 2. Create the Persistent Volume Claim
@@ -308,7 +308,7 @@ ls /mnt/data
 
 They should have the same data.
 
-#### Rollbacks
+### Rollbacks
 
 Use allways version tags in the images, try to avoid `:latest` tag.
 
@@ -379,9 +379,9 @@ kubectl rollout pause deployment demo
 kubectl rollout resume deployment demo
 ```
 
-## Notes from the Training
+### Notes from the Training
 
-### Storage
+#### Volumes
 
 **emptyDir** storage:
 
@@ -498,7 +498,7 @@ volumes:
     imagefeatures: "layering"
 ```
 
-### Secrets
+#### Secrets
 
 ```bash
 $ echo secreto | base64
@@ -554,7 +554,7 @@ spec:
 kubectl exec -it busybox -- cat /mysqlpassword/password
 ```
 
-### ConfigMaps
+#### ConfigMaps
 
 As environment variable
 

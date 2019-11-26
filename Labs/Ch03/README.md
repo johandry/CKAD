@@ -1,4 +1,4 @@
-# Chapter 3: Build
+## Chapter 3: Build
 
 #### Create a deployment and scale it
 

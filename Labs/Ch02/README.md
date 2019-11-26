@@ -1,4 +1,4 @@
-# Chapter 2: Kubernetes Architecture
+## Chapter 2: Kubernetes Architecture
 
 #### Check cluster info
 

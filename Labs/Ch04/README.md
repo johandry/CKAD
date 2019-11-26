@@ -1,6 +1,6 @@
-# Chapter 4: Design
+## Chapter 4: Design
 
-#### Documentation
+### Documentation
 
 Go to kubernetes.io -> Tasks -> Run Jobs -> [Running Automated Tasks with a CronJob](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/)
 
@@ -31,6 +31,6 @@ spec:
 kubectl run sleepy --image=busybox --schedule="*/2 * * * *" --restart=OnFailure --dry-run=true -o yaml -- /bin/sleep 3
 ```
 
-## Links in training
+### Notes from the Training
 
 - [Ambassador](https://www.getambassador.io) is an "open source, Kubernetes-native API gateway for microservices built on Enjoy"

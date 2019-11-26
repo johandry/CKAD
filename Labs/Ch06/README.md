@@ -1,13 +1,13 @@
-# Chapter 6: Security
+## Chapter 6: Security
 
-#### Documentation
+### Documentation
 
 * kubernetes.io > Reference > Accessing the API > [Controlling Access to the Kubernetes API](https://kubernetes.io/docs/reference/access-authn-authz/controlling-access/)
 * kubernetes.io > Reference > Accessing the API > [Authenticating](https://kubernetes.io/docs/reference/access-authn-authz/authentication/)
 * kubernetes.io > Tasks > Configure Pods and Containers > [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 * kubernetes.io > Concepts > Services, Load Balancing, and Networking > [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 
-#### Security Context
+### Security Context
 
 A pod that runs with user id 101
 
@@ -45,7 +45,7 @@ spec:
     ...
 ```
 
-#### Network Policies
+### Network Policies
 
 List of network providers that supports Network Policy:
 
