@@ -1,10 +1,10 @@
 # Chapter 4: Design
 
-##### Documentation
+#### Documentation
 
 Go to kubernetes.io -> Tasks -> Run Jobs -> [Running Automated Tasks with a CronJob](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/)
 
-##### Create a job
+#### Create a job
 
 ```bash
 kubectl run sleepy --image=busybox --restart=OnFailure --dry-run=true -o yaml -- /bin/sleep 3
@@ -12,7 +12,7 @@ kubectl run sleepy --image=busybox --restart=OnFailure --dry-run=true -o yaml --
 kubectl create job sleepy --image=busybox --dry-run=true -o yaml -- /bin/sleep 3
 ```
 
-##### Completion, Parallelism & Active Deadline
+#### Completion, Parallelism & Active Deadline
 
 Edit the job manifest to include `job.spec.completion`, `job.spec.parallelism` and `job.spec.activeDeadlineSeconds`. Example:
 
@@ -25,7 +25,7 @@ spec:
     spec:
 ```
 
-##### Create a cronjob
+#### Create a cronjob
 
 ```bash
 kubectl run sleepy --image=busybox --schedule="*/2 * * * *" --restart=OnFailure --dry-run=true -o yaml -- /bin/sleep 3

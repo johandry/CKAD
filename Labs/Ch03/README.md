@@ -1,19 +1,19 @@
 # Chapter 3: Build
 
-##### Create a deployment and scale it
+#### Create a deployment and scale it
 
 ```bash
 kubectl create deployment simpleapp --image=johandry/simpleapp
 kubectl scale deployment simpleapp --replicas=6
 ```
 
-##### Get deployment manifest
+#### Get deployment manifest
 
 ```bash
 kubectl get deployment simpleapp -o yaml
 ```
 
-##### Readiness Probe
+#### Readiness Probe
 
 Include in `deployment.spec.template.spec.containers[n].readinessProbe`:
 
@@ -34,7 +34,7 @@ Include in `deployment.spec.template.spec.containers[n].readinessProbe`:
     periodSeconds: 10
 ```
 
-##### Liveness Probe
+#### Liveness Probe
 
 Include in `deployment.spec.template.spec.containers[n].livenessProbe`:
 

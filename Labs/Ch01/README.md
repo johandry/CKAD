@@ -2,7 +2,7 @@
 
 When we are either developing on Kubernetes or learning Kubernetes we need access to free Kubernetes clusters. Most of these options are not even close to the production environment but they works for most of the scenarios.
 
-In this post I'll show you 6 possible Kubernetes cluster that you can use for some development and Kubernetes learning. I will divide these clusters in 2 groups: 
+In this post I'll show you 6 possible Kubernetes cluster that you can use for some development and Kubernetes learning. I will divide these clusters in 2 groups:
 
 **Online clusters**: These are clusters that are available on internet for free with some limitations but also some good advantages.
 
@@ -17,7 +17,7 @@ In this post I'll show you 6 possible Kubernetes cluster that you can use for so
 
 ## Katacoda
 
-Katacoda is an interactive learning platform. It offers multiple learning platforms such as Kubernetes, Docker, OpenShift, Hashicorp tools, Jenkins, Ansible, Machine Learning, Go and many others. 
+Katacoda is an interactive learning platform. It offers multiple learning platforms such as Kubernetes, Docker, OpenShift, Hashicorp tools, Jenkins, Ansible, Machine Learning, Go and many others.
 
 You can learn Kubernetes and more following the published trainings. You can also create your own session and publish it on Katacoda from your GitHub repository. As it's an online cluster you cannot play with local volumes but it basically offers everything you need to learn Kubernetes and develop some simple applications.
 
@@ -25,13 +25,13 @@ One of the learning platforms is a Kubernetes playground with two nodes (master 
 
 When the script ends, the cluster is ready to be used. It's possible to open extra terminals and open a browser to the exposed services.
 
-To terminate the session click on `Continue`. 
+To terminate the session click on `Continue`.
 
 ## Play with Kubernetes
 
 Play with Kubernetes is a lab provided by Docker and it's another playground. They also offer a Kubernetes training for beginners but it's not like Katacoda which offer more topics and the community can publish their own trainings.
 
-To access the playground go to http://labs.play-with-k8s.com/ and click on Start (after login). Then create as many instances as you need. 
+To access the playground go to http://labs.play-with-k8s.com/ and click on Start (after login). Then create as many instances as you need.
 
 Initialize the cluster from the master (the first node) using `kubeadm` executing the first printed instruction. When `kubeadm init` finishes it prints a `kubeadm join` instruction, execute it in the following worker nodes.
 
@@ -41,17 +41,16 @@ Play with Kubernetes is not bad but Katacoda is simpler when it's time to create
 
 ## Minikube
 
-Minikube was the first local Kubernetes cluster for developers, it starts a single node Kubernetes cluster on a VM. Minikube works on Linux, MacOS and Windows. 
+Minikube was the first local Kubernetes cluster for developers, it starts a single node Kubernetes cluster on a VM. Minikube works on Linux, MacOS and Windows.
 
 To install Minikube on Mac, execute `brew install minikube`, for Linux or Windows go to https://minikube.sigs.k8s.io/docs/start/
 
 To start a Kubernetes cluster execute: `minikube start` and to terminate it, execute: `minikube stop`.
 
-Minikube offer some commands to make your live easier such as 
+Minikube offer some commands to make your live easier such as:
 
-`minikube dashboard` to open the Kubernetes Dashboard
-
-`minikube service NAME` to open the exposed service NAME in a browser.
+* `minikube dashboard` to open the Kubernetes Dashboard
+* `minikube service NAME` to open the exposed service NAME in a browser.
 
 Example:
 
@@ -131,4 +130,3 @@ If you are on Linux, you can use Minikube or install your own Kubernetes cluster
 If you need a multi-node cluster, then I suggest to install your own cluster using VM's and `kubeadm`.
 
 These are my suggestions for a free Kubernetes cluster but these clusters may not be similar to your production environment, so after finish your development and some simple tests, my recommendation is to test your code in an environment similar to your production environment which may be a Kubernetes cluster on some cloud or baremetal.
-

@@ -1,6 +1,6 @@
 # Chapter 2: Kubernetes Architecture
 
-##### Check cluster info
+#### Check cluster info
 
 ```bash
 kubectl cluster-info
@@ -10,13 +10,13 @@ kubectl get all
 kubectl get all --all-namespaces
 ```
 
-##### List resources
+#### List resources
 
 ```bash
 kubectl api-resources
 ```
 
-##### Create pod
+#### Create pod
 
 Use `run` and `--restart=Never`:
 
@@ -24,7 +24,7 @@ Use `run` and `--restart=Never`:
 kubectl run nginx --image=nginx --restart=Never
 ```
 
-##### Create deployment
+#### Create deployment
 
 Do not use `--restart=Never`
 
@@ -38,7 +38,7 @@ To have multiple replicas use `--replicas=n`, to export the service on a port us
 kubectl run nginx --image=nginx --replicas=6 --port=80 --expose
 ```
 
-##### Check nginx
+#### Check nginx
 
 Get the service IP or, if there is no service (`--expose` wasn't used), get the pod IP:
 
@@ -53,7 +53,7 @@ Assuming `--port=80` was used:
 kubectl run busybox --image=busybox -it --rm --restart=Never -- wget -O- 10.107.69.177:80
 ```
 
-##### Multiple containers
+#### Multiple containers
 
 1. Create pod manifest:
   
@@ -61,20 +61,20 @@ kubectl run busybox --image=busybox -it --rm --restart=Never -- wget -O- 10.107.
    kubectl run nginx --image=nginx --restart=Never --dry-run=true -o yaml > nginx.yaml
    ```
 
-2. Edit it to add a second container inside `spec.containers[]`, for example:
+1. Edit it to add a second container inside `spec.containers[]`, for example:
 
   ```yaml
     - name: fdlogger
       image: fluent/fluentd
   ```
 
-3. Create the pod:
+1. Create the pod:
 
    ```bash
    kubectl create -f nginx.yaml
    ```
 
-##### Execute a command inside specific container
+#### Execute a command inside specific container
 
    ```bash
    kubectl exec nginx -it -c fdlogger -- /bin/sh
