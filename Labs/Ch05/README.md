@@ -381,7 +381,7 @@ kubectl rollout resume deployment demo
 
 
 
-## From the Training
+## Notes from the training
 
 **emptyDir** storage:
 

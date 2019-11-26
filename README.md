@@ -1,5 +1,7 @@
 # Kubernetes for Developers
 
+This is my personal quick guide to study for the CKAD. It contain my notes from the training [Kubernetes for Developers](https://training.linuxfoundation.org/training/kubernetes-for-developers/) from CNFN/Linux Foundation, other pages or guides to study for CKAD and the book [Kubernetes Cookbook](https://www.amazon.com/Kubernetes-Cookbook-Building-Native-Applications/dp/1491979682).
+
 ## Chapters
 
 1. Chapter 1: Introduction
@@ -7,8 +9,13 @@
 3. Chapter 3: [Build](./Labs/Ch03)
 4. Chapter 4: [Design](./Labs/Ch04)
 5. Chapter 5: [Deployment Configuration](./Labs/Ch05)
+6. Chapter 6: [Security](./Labs/Ch06)
+7. Chapter 7: Exposing Applications
+8. Chapter 8: Troubleshooting
 
-## Tips
+For each chapter there is a README with the notes from the training and other pages, the PDF files for the Labs for each chapter, a `solution.sh` script with the solutions to the Labs from the training and, for some chapters, some aditional files used for the Labs.
+
+## General Tips
 
 ##### API Resources
 
@@ -118,3 +125,5 @@ kubectl logs nginx -p
 
 - **Kubernetes for Developers Labs**: https://lms.quickstart.com/custom/862120/LFD259-labs_V2019-08-19.pdf
 - **Kubernetes for Developers Solution**: https://training.linuxfoundation.org/cm/LFD259/LFD259_V2019-08-19_SOLUTIONS.tar.bz2
+- **dgkanatsios/CKAD-exercises**: https://github.com/dgkanatsios/CKAD-exercises
+- 
