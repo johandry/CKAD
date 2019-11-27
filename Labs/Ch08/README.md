@@ -16,10 +16,6 @@ kubernetes.io > Tasks > Monitoring, Logging, and Debugging > [Debug Pods and Rep
 
 kubernetes.io > Tasks > Monitoring, Logging, and Debugging > [Debug Services](https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/)
 
-kubernetes.io > Tasks > Monitoring, Logging, and Debugging > 
-
-kubernetes.io > Tasks > Monitoring, Logging, and Debugging > 
-
 ### Notes from the Training
 
 #### Linux tools
@@ -31,18 +27,18 @@ kubernetes.io > Tasks > Monitoring, Logging, and Debugging >
 
 #### Monitoring & Logging tools
 
-* [Prometheus](https://www.prometheus.io/) for monitoring
-* [Grafana](https://grafana.com) for visualization of collected metrics from Prometheus.
+- [Prometheus](https://www.prometheus.io/) for monitoring
+- [Grafana](https://grafana.com) for visualization of collected metrics from Prometheus.
 
-* [Fluentd](https://www.fluentd.org/) for logging and feed aggregated logs to Elasticsearch
+- [Fluentd](https://www.fluentd.org/) for logging and feed aggregated logs to Elasticsearch
 
-* [ELK](https://www.elastic.co/videos/introduction-to-the-elk-stack) stack of Elastisearch, ~~Logstach~~ and Kibana. Elasticserch received the aggregated logs from fluentd and use Kibana to visualize them.
+- [ELK](https://www.elastic.co/videos/introduction-to-the-elk-stack) stack of Elastisearch, ~~Logstach~~ and Kibana. Elasticserch received the aggregated logs from fluentd and use Kibana to visualize them.
 
   ![ELK-EFK-architecture](https://i2.wp.com/www.techmanyu.com/wp-content/uploads/ELK-EFK-architecture.jpg?fit=700%2C311&ssl=1)
 
-* [OpenTracing](https://opentracing.io/docs/) propagate transaction among all services, code and packages. 
+- [OpenTracing](https://opentracing.io/docs/) propagate transaction among all services, code and packages.
 
-* [Jaeger](https://www.jaegertracing.io/) is a tracing system focus on distributed context propagation, transaction monitoring and root cause analysis. It's an implementation of OpenTracing.
+- [Jaeger](https://www.jaegertracing.io/) is a tracing system focus on distributed context propagation, transaction monitoring and root cause analysis. It's an implementation of OpenTracing.
 
 #### Basic Steps
 
@@ -66,7 +62,7 @@ In the following flow, `<tab>` means pressing `tab` key, and it's used to autoco
    kubectl logs problem-<tab>
    ```
 
-   Consider deploy a **sidecar** container in the pod to generate and handling logging. These can be configured to stream logs or run a logging agent.
+   Consider deploy a **sidecar*- container in the pod to generate and handling logging. These can be configured to stream logs or run a logging agent.
 
 3. Check networking, including DNS, firewalls and general connectivity using Linux commands/tools, example `dig`.
 
@@ -78,7 +74,7 @@ In the following flow, `<tab>` means pressing `tab` key, and it's used to autoco
 
 7. Inter-node network issues, DNS & Firewall
 
-8. Master server controllers. 
+8. Master server controllers.
 
    1. Control Pods state
    2. Errors in log files
@@ -92,7 +88,7 @@ In the following flow, `<tab>` means pressing `tab` key, and it's used to autoco
 
    Confirm the app is working correctly, check if this is an intermittent issue or related to slow performance.
 
-3. (The app is not the culprit). Make sure the Pods are in **Running** status:
+3. (The app is not the culprit). Make sure the Pods are in **Running*- status:
 
    ```bash
    kubectl get pods
@@ -120,34 +116,30 @@ In the following flow, `<tab>` means pressing `tab` key, and it's used to autoco
 
 1. Disable security for testing. Disable RBAC, SELinux and AppArmor to identify the root cause of the issue
 
-2. Check system and agent logs. 
+2. Check system and agent logs.
 
    1. If they use **systemd**: Logs will go to **journalctl**, view the logs with `journalctl -a` and maybe in `/var/log/journal/`
    2. Without **systemd**: Logs created in `/var/log/<agent>.log`
 
    In both cases, the logs could have rotation, if not it's advisable to do it.
 
-
-
 Container components:
 
-* `kube-scheduler`
-* `kube-proxy`
+- `kube-scheduler`
+- `kube-proxy`
 
 Non-container components:
 
-* `kubelet`
-* Docker
-* Others ...
+- `kubelet`
+- Docker
+- Others ...
 
 #### Certified Kubernetes Conformance Program
 
-A CNCF program to certify distributions that meets essential requirements and adhere to complete API functionality. 
+A CNCF program to certify distributions that meets essential requirements and adhere to complete API functionality.
 
 Read more about it on GitHub [cncf/k8s-conformance](https://github.com/cncf/k8s-conformance) and the [instructions](https://github.com/cncf/k8s-conformance/blob/master/instructions.md).
 
 #### More resources
 
 - [GitHub website for issues and bug tracking](https://github.com/kubernetes/kubernetes/issues)
-
-#### 
