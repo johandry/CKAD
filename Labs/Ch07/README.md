@@ -2,8 +2,7 @@
 
 ### Documentation
 
-* kubernetes.io > Concepts > Services, Load Balancing, and Networking > [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
-* 
+- kubernetes.io > Concepts > Services, Load Balancing, and Networking > [Service](https://kubernetes.io/docs/concepts/services-networking/service/)
 
 ### Notes from the Training
 
@@ -19,7 +18,7 @@ kubectl get services
 kubectl get service nginx -o yaml
 ```
 
-Get the port from `Service.spec.ports.nodePort` to open http://<publicIP>:<nodePort>/
+Get the port from `Service.spec.ports.nodePort` to open `http://<publicIP>:<nodePort>/`
 
 #### Ingress Controllers
 
@@ -27,15 +26,15 @@ Get the port from `Service.spec.ports.nodePort` to open http://<publicIP>:<nodeP
 
 List of Ingress Controllers:
 
-* Nginx
-* GCE
-* [Traefik](https://traefik.io/)
-* [HAProxy](http://www.haproxy.org/)
+- Nginx
+- GCE
+- [Traefik](https://traefik.io/)
+- [HAProxy](http://www.haproxy.org/)
 
 ### Service Mesh
 
-* [Envoy](https://www.envoyproxy.io/)
-* [Istio](https://istio.io/)
-* [linkerd](https://linkerd.io/2/)
+- [Envoy](https://www.envoyproxy.io/)
+- [Istio](https://istio.io/)
+- [linkerd](https://linkerd.io/2/)
 
 ![Istio Architecture](https://istio.io/docs/concepts/security/architecture.svg)
