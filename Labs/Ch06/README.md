@@ -7,6 +7,29 @@
 * kubernetes.io > Tasks > Configure Pods and Containers > [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 * kubernetes.io > Concepts > Services, Load Balancing, and Networking > [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 
+
+
+### Kernel Capabilities
+
+All capabilities are here: https://github.com/torvalds/linux/blob/master/include/uapi/linux/capability.h
+
+* NET_ADMIN allows interface, routing, and other network configuration.
+
+  https://github.com/torvalds/linux/blob/master/include/uapi/linux/capability.h#L203
+
+* SYS_TIME allows system clock configuration
+
+  https://github.com/torvalds/linux/blob/master/include/uapi/linux/capability.h#L311
+
+Use command `capsh` to know the kernel capabilities
+
+```bash
+grep Cap /proc/1/status
+capsh --decode=00000000aa0435fb
+```
+
+
+
 ### Security Context
 
 A pod that runs with user id 101
