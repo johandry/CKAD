@@ -17,13 +17,13 @@ For each chapter there is a README with the notes from the training and other pa
 
 ## General Tips
 
-##### API Resources
+#### API Resources
 
 ```bash
 kubectl api-resources
 ```
 
-##### kubectl explain
+#### kubectl explain
 
 ```bash
 kubectl explain deployment
@@ -31,7 +31,7 @@ kubectl explain deployment --recursive
 kubectl explain deployment.spec.strategy
 ```
 
-##### Cluster information
+#### Cluster information
 
 ```bash
 kubectl cluster-info
@@ -39,33 +39,69 @@ kubectl get nodes
 kubectl get all --all-namespaces
 ```
 
-##### Generate manifest
+#### Generators
 
-Append to `run` the parameter `--dry-run=true -o yaml`:
-
-```bash
-kubectl run nginx --image=nginx --restart=Never --dry-run=true -o yaml
-```
-
-Append `-o yaml --export` to an existing resource
+Append `-o yaml --export` to getting an existing resource:
 
 ```bash
 kubectl get po nginx -o yaml --export
 ```
 
-##### kubectl cheatsheet
+Or append to `kubectl run NAME --image=IMAGE` the parameters `--dry-run -o yaml` and one of the followings to create a Pod, Deployment, Deployment + Replica Set + Service, Job or Cron Job:
+
+#### Pod
+
+Append `--restart=Never`
+
+```bash
+kubectl run nginx --image=nginx --dry-run -o yaml --restart=Never
+```
+
+#### Deployment
+
+Append `--restart=Always` or don't use it, as it's the default value.
+
+```bash
+kubectl run nginx --image=nginx --dry-run -o yaml
+```
+
+#### Deployment + Replica Set + Service
+
+To have a Replica Set append `--replicas=N`, to have a Service append `--port=PORT --expose`.
+
+```bash
+kubectl run nginx --image=nginx --dry-run -o yaml --restart=Always --port=80 --expose --replicas=5
+```
+
+#### Job
+
+Append `--restart=OnFailure --command -- COMMAND`.
+
+```bash
+kubectl run sleepy --image=busybox --dry-run -o yaml --restart=OnFailure --command -- /bin/sleep 3
+```
+
+#### Cron Job
+
+Append `--restart=OnFailure --schedule="SCHEDULE" --command -- COMMAND`.
+
+```bash
+kubectl run sleepy --image=busybox --dry-run -o yaml --restart=OnFailure --schedule="*/2 * * * *" --command -- /bin/sleep 3
+```
+
+#### kubectl cheatsheet
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-##### kubectl commands reference
+#### kubectl commands reference
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Commands -> [kubectl Command Reference](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
 
-##### kubectl run to generate resources
+#### kubectl run to generate resources
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Usage Conventions -> Scroll down to Best Practices -> [Generators](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)
 
-##### Shell into a container
+#### Shell into a container
 
 Go to kubernetes.io -> Tasks -> Monitoring, Logging, and Debugging -> [Get a Shell to a Running Container](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/)
 
@@ -75,22 +111,22 @@ kubectl exec shell-demo env
 kubectl run busybox --image=busybox -it --rm -- env
 ```
 
-##### **Using port forwarding**
+#### Using port forwarding
 
 Go to kubernetes.io -> Tasks -> Access Applications in a Cluster -> [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
 
-##### Create pod
+#### Create pod
 
 ```bash
 kubectl create namespace myns
 kubectl run nginx --image=nginx --restart=Never -n myns
 ```
 
-To generate the manifest append: `--dry-run=true -o yaml`, to allow traffic in a port, append: `--port=80`
+To allow traffic in a port, append: `--port=80`
 
 ```bash
 kubectl create namespace myns
-kubectl run nginx --image=nginx --restart=Never --port=80 --dry-run=true -o yaml -n myns
+kubectl run nginx --image=nginx --restart=Never --port=80 -n myns
 ```
 
 To check the pod, get the pod IP and use a temporal pod to access the pod service:
@@ -100,7 +136,7 @@ kubectl get pod -o wide # get the IP
 kubectl run busybox --image=busybox -it --rm --restart=Never -- wget -O- $IP:80
 ```
 
-##### Change pod image
+#### Change pod image
 
 ```bash
 kubectl set image pod/nginx nginx=nginx:1.8
@@ -111,7 +147,7 @@ kubectl get pods -w
 watch -n 5 kubectl get pods
 ```
 
-##### Get pod information
+#### Get pod information
 
 ```bash
 kubectl describe pod nginx
