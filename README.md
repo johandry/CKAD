@@ -15,6 +15,8 @@ This is my personal quick guide to study for the CKAD. It contain my notes from 
 
 For each chapter there is a README with the notes from the training and other pages, the PDF files for the Labs for each chapter, a `solution.sh` script with the solutions to the Labs from the training and, for some chapters, some aditional files used for the Labs.
 
+For the test use Google Chrome and install the [PSI Chrome Extension](https://chrome.google.com/webstore/detail/innovative-exams-screensh/dkbjhjljfaagngbdhomnlcheiiangfle) 
+
 ## General Tips
 
 #### API Resources
@@ -157,9 +159,19 @@ kubectl logs nginx
 kubectl logs nginx -p
 ```
 
+## Linux Foundation Resources
+
+List of resources from Linux Foundation ([current version](https://training.linuxfoundation.org/cncf-certification-candidate-resources/))
+
+[CKAD Candidate Handbook](https://training.linuxfoundation.org/go/cka-ckad-candidate-handbook) | [here](./CKA-CKAD-Candidate-Handbook-v1.6.pdf)
+
+[CKAD Exam Tips](http://training.linuxfoundation.org/go//Important-Tips-CKA-CKAD) | [here](./Important-Tips-CKA-CKAD-Master-11.20.19.pdf)
+
+[CKAD FAQ](http://training.linuxfoundation.org/go/cka-ckad-faq) | [here](./CKA-CKAD-FAQ-11.22.19.pdf)
+
 ## Sources
 
 - **Kubernetes for Developers Labs**: https://lms.quickstart.com/custom/862120/LFD259-labs_V2019-08-19.pdf
 - **Kubernetes for Developers Solution**: https://training.linuxfoundation.org/cm/LFD259/LFD259_V2019-08-19_SOLUTIONS.tar.bz2
 - **dgkanatsios/CKAD-exercises**: https://github.com/dgkanatsios/CKAD-exercises
-- 
+
