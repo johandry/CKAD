@@ -114,10 +114,107 @@ EOA2
 
 check_secret(){
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m View secrets inside container:\n"
-  kubectl exec app2 -it -- sh -c "ls -al /mysqlpassword; cat /mysqlpassword/password"
-  echo
+  kubectl exec app2 -it -- sh -c "ls -al /mysqlpassword; echo; echo -n 'Password: '; cat /mysqlpassword/password; echo"
+}
+
+create_service_account() {
+  kubectl delete rolebinding secret-access-rb
+  kubectl delete clusterrole secret-access-cr
+  kubectl delete sa secret-access-sa
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Secrets:\n"
+  kubectl get secrets --all-namespaces
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create the Service Account 'secret-access-sa':\n"
+  cat <<EOSA | kubectl create -f -
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secret-access-sa
+EOSA
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Service Accounts:\n"
+  kubectl get serviceaccounts
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create the Cluster Role 'secret-access-cr':\n"
+  cat <<EOCR | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secret-access-cr
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+EOCR
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Cluster Roles:\n"
+  kubectl get clusterroles
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Bind the Service Account to the Cluster Role:\n"
+  cat <<EORB | kubectl create -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: secret-access-rb
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: secret-access-cr
+subjects:
+- kind: ServiceAccount
+  name: secret-access-sa
+EORB
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Role Bindings:\n"
+  kubectl get rolebindings
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Pod Service Account before set 'secret-access-sa':\n"
+  kubectl describe pod app2 | grep -i secret
+  kubectl delete pod app2
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Recreate Pod with Service Account 'secret-access-sa':\n"
+    cat <<EOA2 | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    run: app2
+  name: app2
+spec:
+  serviceAccountName: secret-access-sa
+  securityContext:
+    runAsUser: 1000
+  containers:
+  - name: app2
+    image: busybox
+    command:
+    - sleep
+    - "3600"
+    securityContext:
+      runAsUser: 2000
+      allowPrivilegeEscalation: false
+      capabilities:
+        add: ["NET_ADMIN", "SYS_TIME"]
+    volumeMounts:
+    - name: mysql
+      mountPath: /mysqlpassword
+  volumes:
+  - name: mysql
+    secret:
+      secretName: appsecret
+EOA2
+  watch kubectl get pod app2
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Pod Service Account after set 'secret-access-sa':\n"
+  kubectl describe pod app2 | grep -i secret
 }
 
 # create_app2
 # create_secret
 check_secret
+create_service_account

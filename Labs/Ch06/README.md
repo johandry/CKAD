@@ -7,7 +7,54 @@
 * kubernetes.io > Tasks > Configure Pods and Containers > [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
 * kubernetes.io > Concepts > Services, Load Balancing, and Networking > [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 
+### Security Context
 
+A pod that runs with user id 101:
+
+In a one-line command, run this:
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --overrides='{"spec": {"securityContext": {"runAsUser": 101}}}'
+```
+
+Or do it manually:
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --dry-run -o yaml > nginx.yaml
+```
+
+Insert `Pod.spec.securityContext.runAsUser`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    runAsUser: 101
+  containers:
+    ...
+```
+
+To make it has the capabilities `NET_ADMIN` and `SYS_TIME`, add them to the `securityContext` inside the container (`pod.spec.containers[0].securityContext.capabilities.add`):
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  securityContext:
+    runAsUser: 101
+  containers:
+  - name: nginx
+  	image: nginx
+  	securityContext:
+  		capabilities:
+      	add: ["NET_ADMIN", "SYS_TIME"]
+    ...
+```
 
 ### Kernel Capabilities
 
@@ -28,51 +75,106 @@ grep Cap /proc/1/status
 capsh --decode=00000000aa0435fb
 ```
 
+### Service Accounts, Cluster Roles & Role Bindings
 
+`kubectl api-resources`
 
-### Security Context
+1. Create the Service Account
 
-A pod that runs with user id 101
+Name: `serviceaccount`, Short Name: `sa`, Kind: `ServiceAccount`
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+	name: SA_NAME
+```
+
+2. Create the Cluster Role
+
+Name: `clusterroles`, Short Name: NONE, Kind: `ClusterRole`, API Group: `rbac.authorization.k8s.io`
+
+To create a Cluster Role check other similar or one with all permissions to copy from it
+
+`kubectl get clusterroles admin -o yaml > myclusterrole.yaml`
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+	name: CR_NAME
+rules:
+- apiGroups:
+	- ""         # <- "" means "v1"
+	resources:
+	- secrets
+	verbs:
+	- get
+	- list
+```
+
+3. Bind the role to the account
+
+Name: `rolebindings`, Short Name: NONE, Kind: `RoleBinding`, API Group: `rbac.authorization.k8s.io`
+
+To create it use a blueprint
 
 ```bash
-kubectl run nginx --image=nginx --restart=Never --dry-run -o yaml > nginx.yaml
+kubectl get rolebindings --all-namespaces
+kubectl get rolebindings kube-proxy -n kube-system -o yaml
 ```
-
-Insert `Pod.spec.securityContext.runAsUser`:
 
 ```yaml
-apiVersion: v1
-kind: Pod
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
-  name: nginx
-spec:
-  securityContext:
-    runAsUser: 101
-  containers:
-    ...
+  name: RB_NAME
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: CR_NAME
+subjects:
+- kind: ServiceAccount
+  name: SA_NAME
 ```
 
-Make it has the capabilities `NET_ADMIN` and `SYS_TIME`:
+4. Assign Service Account to the Pod or Deployment
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: nginx
-spec:
-  securityContext:
-    runAsUser: 101
-    capabilities:
-      add: ["NET_ADMIN", "SYS_TIME"]
-  containers:
-    ...
+Add the property `Pod.spec.serviceAccountName` with the Service Account name.
+
+With a new pod you can create it with:
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --serviceaccount=secret-access-sa
 ```
+
+For an existing Deployment (also rc, daemonset, job, rs & statefulset) you can set the Service Account with:
+
+```bash
+kubectl set serviceaccount deployment nginx secret-access-sa
+```
+
+For an existing Pod, just delete and create.
 
 ### Network Policies
 
 List of network providers that supports Network Policy:
 
 kubernetes.io > Tasks > Administer a Cluster > Install a Network Policy Provider > Declare Network Policy > [Before you begin](https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy/#before-you-begin)
+
+Network policy to deny all traffic:
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+	name: deny-default
+spec:
+	podSelector: {}
+	policyTypes:
+	- Ingress
+	- Egress
+```
 
 Network policy to allow access to the pod only if other pods are labeled with `access: true`
 
