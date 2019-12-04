@@ -91,15 +91,25 @@ Append `--restart=OnFailure --schedule="SCHEDULE" --command -- COMMAND`.
 kubectl run sleepy --image=busybox --dry-run -o yaml --restart=OnFailure --schedule="*/2 * * * *" --command -- /bin/sleep 3
 ```
 
-#### kubectl cheatsheet
+#### Service Generator
+
+```bash
+kubectl create service nodeport mysvc --tcp=80 --node-port=8080 --dry-run -o yaml 
+```
+
+The 3rd parameter (i.e. `nodeport`) is the service type, the options are: `clusterip`, `externalname`,  `loadbalancer` & `nodeport`.
+
+The port can be a duplet like `--tcp=5678:8080` where ports are `port:targetPort`. The `--node-port` is optional and only for `nodeport` type.
+
+### kubectl cheatsheet
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> [kubectl Cheat Sheet](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 
-#### kubectl commands reference
+### kubectl commands reference
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Commands -> [kubectl Command Reference](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
 
-#### kubectl run to generate resources
+### kubectl run to generate resources
 
 Go to kubernetes.io -> Reference -> kubectl CLI -> kubectl Usage Conventions -> Scroll down to Best Practices -> [Generators](https://kubernetes.io/docs/reference/kubectl/conventions/#generators)
 
@@ -131,6 +141,13 @@ kubectl create namespace myns
 kubectl run nginx --image=nginx --restart=Never --port=80 -n myns
 ```
 
+To create the pod and service, append the flag `--expose` but the service will be of type `ClusterIP`.
+
+```bash
+kubectl create namespace myns
+kubectl run nginx --image=nginx --restart=Never --port=80 --expose -n myns
+```
+
 To check the pod, get the pod IP and use a temporal pod to access the pod service:
 
 ```bash
@@ -158,6 +175,33 @@ kubectl logs nginx
 # From previous instance, when the pod crashed
 kubectl logs nginx -p
 ```
+
+### Create a Service
+
+To create the pod and the service check the command above, however this will create a `ClusterIP` service.
+
+To create a service for an existing Pod or Deployment use `kubectl expose`:
+
+```bash
+kubectl expose pod nginx --type=NodePort --port=80
+# Or
+kubectl expose deployment ngonx --type=NodePort --port=80
+```
+
+Or use `kubectl create service` but the pod/deployment need to have the label `app: NAME`. If the pod was created with `kubectl run` it has the label `run: NAME`, so make sure to change the label or create it with the flag `--label='app=NAME'` , or edit the service to change the selector.
+
+```bash
+kubectl run nginx --image=nginx --restart=Never --labels='app=nginx' --port=80
+kubectl create service nodeport nginx --tcp=80 --node-port=31000
+curl http://localhost:31000
+# Or from a node
+clusterIP=$(kubectl get svc nginx -o jsonpath='{$.spec.clusterIP}')
+curl http://${clusterIP}:31000
+```
+
+
+
+
 
 ## Linux Foundation Resources
 
