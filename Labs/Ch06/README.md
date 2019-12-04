@@ -1,5 +1,7 @@
 ## Chapter 6: Security
 
+**IMPORTAT**: Network Policies do not work on Kubernetes on Docker for Desktop
+
 ### Documentation
 
 * kubernetes.io > Reference > Accessing the API > [Controlling Access to the Kubernetes API](https://kubernetes.io/docs/reference/access-authn-authz/controlling-access/)
@@ -242,6 +244,34 @@ kubectl run busybox --image=busybox --rm -it --restart=Never -- wget -O- http://
 # Access granted
 kubectl run busybox --image=busybox --rm -it --restart=Never --labels=access=true -- wget -O- http://nginx:80
 ```
+
+#### Test Network Policies
+
+Use `curl` from your host to check ingress access to the service/pod from outside world:
+
+```bash
+curl http://${ClusterIP}:${ServicePort}
+```
+
+Use `wget` from your host or a pod in your cluster (temporary or existing) to check the ingress access to the service/pod from the cluster:
+
+```bash
+# Test from a new testing Pod
+kubectl run busybox --image=busybox --rm -it --restart=Never -- wget -O- http://<Service Name | Pod IP>:${ServicePort}
+
+# Test from an existing Pod with `wget`
+kubectl exec mypod -it -- wget -O- http://<Service Name | Pod IP>:${ServicePort}
+```
+
+Use `nc -zv` from the pod to verify, to check the egress access to other service/pod and the outside world:
+
+```bash
+kubectl exec -it app2 -- nc -vz 127.0.0.1 ${ServicePort}
+kubectl exec -it app2 -- nc -vz <Pod IP> ${ServicePort}
+kubectl exec -it app2 -- nc -vz www.google.com 80
+```
+
+In previous `kubectl exec` commands, use `-c CONTAINER` if there is more than one container running on the Pod.
 
 ### Notes from the Training
 

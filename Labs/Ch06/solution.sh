@@ -284,13 +284,13 @@ expose_service_for_app2() {
 }
 
 all_closed() {
-  kubectl delete networkpolicies deny-default
+  kubectl delete networkpolicies default-deny
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Network Policy to deny all traffic:\n"
   cat <<EONP | kubectl create -f -
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: deny-default
+  name: default-deny
 spec:
   podSelector: {}
   policyTypes:
@@ -299,22 +299,100 @@ spec:
 EONP
 }
 
+block_ingress() {
+  # kubectl delete networkpolicies default-deny
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Network Policy to deny ingress traffic:\n"
+  cat <<EONP | kubectl replace -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  # - Egress
+EONP
+}
+
+allow_ingress_to_pod() {
+  cidr=$(kubectl get pod app2 -o jsonpath={$.status.podIP})
+
+  # kubectl delete networkpolicies default-deny
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Network Policy to deny ingress traffic except to app2:\n"
+  cat <<EONP | kubectl replace -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: ${cidr}
+EONP
+  kubectl 
+}
+
+allow_ingress_to_pod_port80() {
+  cidr=$(kubectl get pod app2 -o jsonpath={$.status.podIP})
+
+  # kubectl delete networkpolicies default-deny
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Network Policy to deny ingress traffic except to app2 on port 80:\n"
+  cat <<EONP | kubectl replace -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: ${cidr}
+    ports:
+    - port: 80
+      protocol: TCP
+EONP
+  kubectl 
+}
+
 check_access() {
+  ip=$(kubectl get pod app2 -o jsonpath={$.status.podIP})
+
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking exposed web service (ingress):\n" 
   curl -s http://localhost:31000 | head -10
+  kubectl run busybox --image=busybox -it --rm --restart=Never -- ping -c3 ${ip}
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking internet access (egress):\n"
   kubectl exec -it -c app2 app2 -- nc -vz 127.0.0.1 80
   kubectl exec -it -c app2 app2 -- nc -vz www.google.com 80
+
+  echo -ne "\n\x1B[93;1m[WARN ]\x1B[0m Network Policies do not work on Docker for Desktop\n" 
 }
 
 # create_app2
-# create_secret
-# check_secret
-# create_service_account
+create_secret
+check_secret
+create_service_account
 # create_app2_w_sa
 create_app2_w_2_containers
 expose_service_for_app2
 check_access
+
 all_closed
+check_access
+
+block_ingress
+check_access
+
+allow_ingress_to_pod
+check_access
+
+allow_ingress_to_pod_port80
 check_access
