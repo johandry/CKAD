@@ -3,9 +3,6 @@
 echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Solutions to Chapter 6 Labs\n"
 
 create_app2() {
-  # mkdir app2
-  # cd app2
-
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Use this command to generate part of the Pod for the app2:\n"
   echo "kubectl run app2 --image=busybox --dry-run -o yaml --restart=Never --overrides='{\"spec\": {\"securityContext\": {\"runAsUser\": 1000}}}' --command -- sleep 3600"
   kubectl run app2 --image=busybox --dry-run -o yaml --restart=Never --overrides='{"spec": {"securityContext": {"runAsUser": 1000}}}' --command -- sleep 3600
@@ -172,7 +169,9 @@ EORB
 
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List Role Bindings:\n"
   kubectl get rolebindings
+}
 
+create_app2_w_sa() {
   echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Pod Service Account before set 'secret-access-sa':\n"
   kubectl describe pod app2 | grep -i secret
   kubectl delete pod app2
@@ -214,7 +213,108 @@ EOA2
   kubectl describe pod app2 | grep -i secret
 }
 
+create_app2_w_2_containers() {
+  kubectl delete pod app2
+
+  # Remove these lines:
+  # securityContext:
+  #   runAsUser: 1000
+  # They cause `CrashLoopBackOff` error when execute `kubectl get pods`
+  # The event: `Warning   BackOff     pod/app2   Back-off restarting failed container` with `kubectl get event`
+  # And the following logs when execute `kubectl logs app2 -c webserver`
+  # 2019/12/03 21:09:56 [warn] 1#1: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:2 nginx: [warn] the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:2
+  # 2019/12/03 21:09:56 [emerg] 1#1: mkdir() "/var/cache/nginx/client_temp" failed (13: Permission denied) nginx: [emerg] mkdir() "/var/cache/nginx/client_temp" failed (13: Permission denied)
+
+
+  # Not having a lavel cause the error:
+  # error: couldn't retrieve selectors via --selector flag or introspection: the pod has no labels and cannot be exposed
+  # See 'kubectl expose -h' for help and examples
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Recreate Pod two containers:\n"
+  cat <<EOA2 | kubectl create -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: app2
+    run: app2
+  name: app2
+spec:
+  serviceAccountName: secret-access-sa
+  # securityContext:
+  #   runAsUser: 1000
+  containers:
+  - name: webserver
+    image: nginx
+  - name: app2
+    image: busybox
+    command:
+    - sleep
+    - "3600"
+    securityContext:
+      runAsUser: 2000
+      allowPrivilegeEscalation: false
+      capabilities:
+        add: ["NET_ADMIN", "SYS_TIME"]
+    volumeMounts:
+    - name: mysql
+      mountPath: /mysqlpassword
+  volumes:
+  - name: mysql
+    secret:
+      secretName: appsecret
+EOA2
+  watch kubectl get pod app2
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m List the event and logs for the 2nd container to view the errors:\n"
+  kubectl get event
+  echo "Logs:"
+  kubectl logs app2 -c webserver
+}
+
+expose_service_for_app2() {
+  kubectl delete service app2
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Expose service for the web server:\n"
+  # If the label is `run: app2`:
+  # kubectl expose pod app2 --type=NodePort --port=80 
+  # If the label is `app: app2`:
+  kubectl create service nodeport app2 --tcp=80 --node-port=31000
+
+  sleep 5
+}
+
+all_closed() {
+  kubectl delete networkpolicies deny-default
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Create Network Policy to deny all traffic:\n"
+  cat <<EONP | kubectl create -f -
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-default
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+EONP
+}
+
+check_access() {
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking exposed web service (ingress):\n" 
+  curl -s http://localhost:31000 | head -10
+
+  echo -ne "\n\x1B[92;1m[INFO ]\x1B[0m Checking internet access (egress):\n"
+  kubectl exec -it -c app2 app2 -- nc -vz 127.0.0.1 80
+  kubectl exec -it -c app2 app2 -- nc -vz www.google.com 80
+}
+
 # create_app2
 # create_secret
-check_secret
-create_service_account
+# check_secret
+# create_service_account
+# create_app2_w_sa
+create_app2_w_2_containers
+expose_service_for_app2
+check_access
+all_closed
+check_access

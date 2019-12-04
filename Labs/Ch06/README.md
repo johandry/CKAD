@@ -56,6 +56,34 @@ spec:
     ...
 ```
 
+If there is an error, check the events and logs:
+
+```bash
+kubectl get event
+kubectl logs POD [ -c CONTAINER ]
+```
+
+For example, the lines:
+
+```yaml
+   securityContext:
+     runAsUser: 1000
+```
+
+At the `Pod.spec` or container level may cause the error `CrashLoopBackOff`  executing `kubectl get pods`. Checking the events and the logs you'll get the event:
+
+```
+Warning   BackOff     pod/app2   Back-off restarting failed container
+```
+
+And the logs:
+
+```
+2019/12/03 21:09:56 [warn] 1#1: the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:2 nginx: [warn] the "user" directive makes sense only if the master process runs with super-user privileges, ignored in /etc/nginx/nginx.conf:2
+
+2019/12/03 21:09:56 [emerg] 1#1: mkdir() "/var/cache/nginx/client_temp" failed (13: Permission denied) nginx: [emerg] mkdir() "/var/cache/nginx/client_temp" failed (13: Permission denied)
+```
+
 ### Kernel Capabilities
 
 All capabilities are here: https://github.com/torvalds/linux/blob/master/include/uapi/linux/capability.h
