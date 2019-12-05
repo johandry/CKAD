@@ -10,8 +10,8 @@ This is my personal quick guide to study for the CKAD. It contain my notes from 
 4. Chapter 4: [Design](./Labs/Ch04)
 5. Chapter 5: [Deployment Configuration](./Labs/Ch05)
 6. Chapter 6: [Security](./Labs/Ch06)
-7. Chapter 7: Exposing Applications
-8. Chapter 8: Troubleshooting
+7. Chapter 7: [Exposing Applications](./Labs/Ch07)
+8. Chapter 8: [Troubleshooting](./Labs/Ch08)
 
 For each chapter there is a README with the notes from the training and other pages, the PDF files for the Labs for each chapter, a `solution.sh` script with the solutions to the Labs from the training and, for some chapters, some aditional files used for the Labs.
 
