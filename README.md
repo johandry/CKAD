@@ -19,11 +19,47 @@ For the test use Google Chrome and install the [PSI Chrome Extension](https://ch
 
 ## General Tips
 
+#### Setup
+
+```bash
+source <(kubectl completion bash)
+alias k=kubectl
+alias kg='kubectl get'
+alias kc='kubectl create'
+export KUBE_EDITOR=nano # or vi
+```
+
+[Nano Cheat Sheet](https://www.nano-editor.org/dist/latest/cheatsheet.html)
+
+[Vi Cheat Sheet](http://web.mit.edu/merolish/Public/vi-ref.pdf)
+
 #### API Resources
 
 ```bash
 kubectl api-resources
 ```
+
+### API Resources Shortname
+
+| NAME                   | SHORTNAMES |
+| ---------------------- | ---------- |
+| configmaps             | cm         |
+| endpoints              | ep         |
+| events                 | ev         |
+| namespaces             | ns         |
+| nodes                  | no         |
+| persistentvolumeclaims | pvc        |
+| persistentvolumes      | pv         |
+| pods                   | po         |
+| replicationcontrollers | rc         |
+| serviceaccounts        | sa         |
+| services               | svc        |
+| daemonsets             | ds         |
+| deployments            | deploy     |
+| replicasets            | rs         |
+| cronjobs               | cj         |
+| networkpolicies        | netpol     |
+| podsecuritypolicies    | psp        |
 
 #### kubectl explain
 
@@ -218,4 +254,6 @@ List of resources from Linux Foundation ([current version](https://training.linu
 - **Kubernetes for Developers Labs**: https://lms.quickstart.com/custom/862120/LFD259-labs_V2019-08-19.pdf
 - **Kubernetes for Developers Solution**: https://training.linuxfoundation.org/cm/LFD259/LFD259_V2019-08-19_SOLUTIONS.tar.bz2
 - **dgkanatsios/CKAD-exercises**: https://github.com/dgkanatsios/CKAD-exercises
+- [Training CKAD with test](https://www.udemy.com/course/certified-kubernetes-application-developer/learn/lecture/12299352#overview) from Udemy
+- **Tips to prepare for CKAD**: https://youtu.be/rnemKrveZks
 
