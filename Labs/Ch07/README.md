@@ -20,6 +20,8 @@ kubectl expose deployment nginx --port=80 --type=NodePort     --dry-run -o yaml
 kubectl expose rc nginx         --port=80 --type=LoadBalancer --dry-run -o yaml
 ```
 
+Using `kubectl create service` does not create the EndPoints for a NodePort service, instead use `kubectl expose` and add the `nodePort: PORT` to `Service.spec.ports[N].nodePort`.
+
 ### Validate a Service
 
 ```bash

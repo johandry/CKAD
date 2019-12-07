@@ -201,6 +201,23 @@ spec:
     ...
 ```
 
+Also, you could add into the Pod `Pod.spec.containers[n].envFrom[*].secretRef.name`
+
+```yaml
+apiVersion: v1
+kind: Pod
+...
+spec:
+  containers:
+  - name: test-container
+    env:
+    - name: USERNAME
+      envFrom:
+      - secretRef:
+          name: demo-secret-1
+    ...
+```
+
 Check
 
 ```bash

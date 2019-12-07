@@ -15,19 +15,24 @@ This is my personal quick guide to study for the CKAD. It contain my notes from 
 
 For each chapter there is a README with the notes from the training and other pages, the PDF files for the Labs for each chapter, a `solution.sh` script with the solutions to the Labs from the training and, for some chapters, some aditional files used for the Labs.
 
-For the test use Google Chrome and install the [PSI Chrome Extension](https://chrome.google.com/webstore/detail/innovative-exams-screensh/dkbjhjljfaagngbdhomnlcheiiangfle) 
-
 ## General Tips
 
 #### Setup
 
+For the test use Google Chrome and install the [PSI Chrome Extension](https://chrome.google.com/webstore/detail/innovative-exams-screensh/dkbjhjljfaagngbdhomnlcheiiangfle) 
+
 ```bash
-source <(kubectl completion bash)
 alias k=kubectl
 alias kg='kubectl get'
 alias kc='kubectl create'
-export KUBE_EDITOR=nano # or vi
+alias kd='kubectl delete'
+
+# Optional:
+source <(kubectl completion bash)
+export KUBE_EDITOR=nano # or vi, or vim
 ```
+
+*According to some comments, the autocompletion is set by default. Set/use the editor you feel conformatble with*
 
 [Nano Cheat Sheet](https://www.nano-editor.org/dist/latest/cheatsheet.html)
 
@@ -77,6 +82,31 @@ kubectl get nodes
 kubectl get all --all-namespaces
 ```
 
+#### Set Context & Namespace
+
+```bash
+kubectl config current-context
+kubectl config get-contexts
+
+kubectl config use-context <namespace-name>
+kubectl config current-context
+```
+
+Set Namespace
+
+```bash
+kubectl config set-context --current --namespace=<namespace-name>
+
+kubectl config set-context --current --namespace=default
+```
+
+Check configuration
+
+```bash
+kubectl config view --minify
+kubectl config view --minify | grep namespace
+```
+
 #### Generators
 
 Append `-o yaml --export` to getting an existing resource:
@@ -110,6 +140,8 @@ To have a Replica Set append `--replicas=N`, to have a Service append `--port=PO
 ```bash
 kubectl run nginx --image=nginx --dry-run -o yaml --restart=Always --port=80 --expose --replicas=5
 ```
+
+Remember `--restart=Always` is optional as it's the default value.
 
 #### Job
 
