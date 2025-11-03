@@ -32,7 +32,7 @@ source <(kubectl completion bash)
 export KUBE_EDITOR=nano # or vi, or vim
 ```
 
-*According to some comments, the autocompletion is set by default. Set/use the editor you feel conformatble with*
+*According to some comments, the autocompletion is set by default. Set/use the editor you feel comfortable with*
 
 [Nano Cheat Sheet](https://www.nano-editor.org/dist/latest/cheatsheet.html)
 
